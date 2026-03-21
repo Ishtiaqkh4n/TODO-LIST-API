@@ -25,6 +25,7 @@ const registerUser = asynchandler(async(req ,res)=>{
         password
     })
     
+    await user.save({validateBeforeSave:false})
     if(!user){
         throw new ApiError(404,"Something went wrong while creating user")
 
@@ -50,30 +51,43 @@ const registerUser = asynchandler(async(req ,res)=>{
 
 const loginUser = asynchandler(async(req,res)=>{
     const {email,password} = req.body
-    
+
     if(!email){
         throw new ApiError(404,"email is required")
         
     }
       
-    const user = await user.findOne({email})
+    const user = await User.findOne({email})
 
     if(!user){
         throw new ApiError(404,"User with this email does not exists")
-
     }
-
     const validatePassword = await user.isPasswordCorrect(password)
 
     if(!validatePassword){
         throw new ApiError(404,"invalid Credentials")   
     }
+   const accessToken = await user.generateAccessToken()
+   const refreshToken = await user.generateRefreshToken()
+
+   user.refreshToken = refreshToken
+   await user.save({validateBeforeSave:false})
+
+    
     const Logineduser = await User.findById(user._id).select(
         "-password -refreshToken"
     )
 
+    const options = {
+        httpOnly:true,
+        secure:true
+    }
+
+
     return res
     .status(200)
+    .cookie("accessToken",accessToken,options)
+    .cookie("refreshToken",refreshToken,options)
     .json(
         new ApiResponse(
             200,

@@ -1,6 +1,6 @@
 
 const asynchandler = (requestobject)=>{
-    return(req,req,next)=>{
+    return(req,res,next)=>{
         Promise.resolve(requestobject(req,res,next)
         .catch(err=> next(err))
     )

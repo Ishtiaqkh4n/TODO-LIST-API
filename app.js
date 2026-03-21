@@ -15,12 +15,10 @@ app.get("",(req,res)=>{
 
 //check health og api
 import healthRoute from "./src/routes/healthcheck.routes.js"
-
-app.use("api/v1/healthcheck",healthRoute)
-
 import authRoute from "./src/routes/auth.routes.js"
 
-app.use("api/v1/auth",authRoute)
+app.use("/api/v1/auth",authRoute)
+app.use("/api/v1/healthcheck",healthRoute)
 
 
 
