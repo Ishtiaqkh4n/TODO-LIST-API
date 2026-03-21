@@ -48,9 +48,46 @@ const registerUser = asynchandler(async(req ,res)=>{
 })
 
 
+const loginUser = asynchandler(async(req,res)=>{
+    const {email,password} = req.body
+    
+    if(!email){
+        throw new ApiError(404,"email is required")
+        
+    }
+      
+    const user = await user.findOne({email})
+
+    if(!user){
+        throw new ApiError(404,"User with this email does not exists")
+
+    }
+
+    const validatePassword = await user.isPasswordCorrect(password)
+
+    if(!validatePassword){
+        throw new ApiError(404,"invalid Credentials")   
+    }
+    const Logineduser = await User.findById(user._id).select(
+        "-password -refreshToken"
+    )
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            Logineduser,
+            "User logined successfully"
+        )
+    )
+
+
+})
 
 
 
 export {
-    registerUser
+    registerUser,
+    loginUser
 }
