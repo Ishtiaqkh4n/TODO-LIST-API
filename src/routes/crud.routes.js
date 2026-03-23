@@ -3,7 +3,8 @@ import { verifiyJWT } from "../middleware/auth.middleware.js"
 import {
     createCrud,
     updateCrud,
-    getCrud
+    getCrud,
+    deleteCrud
     
 }  from "../controller/crud.controller.js"
 
@@ -41,6 +42,12 @@ router
 .get(
     verifiyJWT,
     getCrud
+)
+
+router.route("/deletePost/:crudId")
+.delete(
+    verifiyJWT,
+    deleteCrud
 )
 
 

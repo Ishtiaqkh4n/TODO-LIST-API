@@ -124,14 +124,41 @@ const getCrud = asynchandler(async (req ,res)=>{
 
 
 
+const deleteCrud = asynchandler(async (req ,res)=>{
+    const {crudId} = req.params
+    console.log("Creator",req.user?._id)
+    const post = await Crud.findOneAndDelete(
+        {
+            createdBy:req.user?._id,
+            id:crudId
+
+        } 
+    )
+    if(!post){
+        throw new ApiError(404,"Post  is already deleted successfully or not found")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            post,
+            "Post deleted successfully"
+        )
+    )
+
+})
+
+
+
 // const createCrud = asynchandler(async (req ,res)=>{})
-
-
 
 
 
 export {
     createCrud,
     updateCrud,
-    getCrud
+    getCrud,
+    deleteCrud
 }    
