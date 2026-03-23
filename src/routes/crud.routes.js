@@ -1,10 +1,17 @@
 import { Router } from "express"
 import { verifiyJWT } from "../middleware/auth.middleware.js"
 import {
-    loginUser,
-    registerUser
+    createCrud,
+    updateCrud
     
-}  from "../controller/auth.contoller.js"
+}  from "../controller/crud.controller.js"
+
+import {
+    PostCreationValidator,
+    PostupdationValidator
+} from "../validator/validation.js"
+
+import {validate} from "../middleware/validator.middleware.js"
 
 
 const router = Router()
@@ -12,8 +19,10 @@ const router = Router()
 
 
 
+router.route("/createPost").post(verifiyJWT,PostCreationValidator(),validate,createCrud)
+router.route("/updatePost/:crudId").post(verifiyJWT,PostupdationValidator(),validate,updateCrud)
 
 
 
 
-export default router
+export {router} 

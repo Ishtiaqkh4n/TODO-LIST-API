@@ -2,10 +2,9 @@ import mongoose, { Schema } from "mongoose";
 import { counter } from "./idcounter.js";
 
 
-const Crud = mongoose.Schema({
+const CrudSchema = mongoose.Schema({
     id:{
         type:Number,
-        required:true
     },
     title:{
         type:String,
@@ -25,21 +24,23 @@ const Crud = mongoose.Schema({
     timestamps:true
 })
 
-Crud.pre('save',async function(){
- if(!this.New) return 
- await counter.findByIdAndUpdate
+CrudSchema.pre('save',async function(){
+ if(!this.isNew) return  
  const count = await counter.findOneAndUpdate(
     {"id":"user_id"},
     {$inc:{seq:1}},
     {new:true,upsert:true}
  )
+
 this.id = count.seq
-counter.save()
 
 },{
     timestamps:true
 }
 )
+
+const Crud = mongoose.model("Crud",CrudSchema)
+
 
 
 export {

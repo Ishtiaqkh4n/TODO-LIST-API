@@ -6,8 +6,9 @@ import jwt from "jsonwebtoken"
 
 const verifiyJWT = asynchandler(async(req ,res ,next)=>{
  
-    const token = req.cookies?.accessToken || req.header("Authorization").replace("Bearer","")
-
+    const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer","")
+    // console.log("token is ",token)
+     
     if(!token){
         throw new ApiError(
             404,
@@ -16,7 +17,7 @@ const verifiyJWT = asynchandler(async(req ,res ,next)=>{
     }
 
     const decodedToken = await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
-
+    // console.log("decoded token is ",decodedToken)
     if(!decodedToken){
         throw new ApiError(
             404,
@@ -25,9 +26,9 @@ const verifiyJWT = asynchandler(async(req ,res ,next)=>{
     }
 
     const user = await User.findById(decodedToken?._id).select(
-        "-password -accessToken"
+        "-password -refreshToken"
     )
-
+    // console.log("user is ",user)
     req.user = user
     
     next()

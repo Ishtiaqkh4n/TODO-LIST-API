@@ -13,7 +13,7 @@ const CounterSchema = mongoose.Schema({
     timestamps:true
 })
 
-const counter = mongoose.model(CounterSchema)
+const counter = mongoose.model("counter",CounterSchema)
 
 export{
     counter
