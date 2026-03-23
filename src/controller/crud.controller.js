@@ -4,8 +4,8 @@ import { ApiError } from "../utils/api-error.js";
 import { asynchandler } from "../utils/asynchandler.js";
 import mongoose from "mongoose";
 
-
 const createCrud = asynchandler(async (req ,res)=>{
+
     const {title,description} = req.body
 
     const post = await Crud.create({
@@ -13,7 +13,6 @@ const createCrud = asynchandler(async (req ,res)=>{
         description,
         createdBy:new mongoose.Types.ObjectId(req.user?._id)
     })
-
 
     if(!post){
         throw new ApiError(404,"This action cannot be performed right now")
@@ -32,20 +31,14 @@ const createCrud = asynchandler(async (req ,res)=>{
 
 })
 
-//how will be post updated??
-//previous user will have issue of login 
-
-
 const updateCrud = asynchandler(async (req ,res)=>{
     const {title,description} = req.body
     const {crudId}  = req.params
-    
     
     const creadibility = await Crud.findOne({
         createdBy:req.user?._id,
         id:crudId
     })
-    console.log("Checking off creadibility of the post",creadibility)
      
     if(!creadibility){
         throw new ApiError(404,"You have no right to mess with this post")
@@ -80,6 +73,56 @@ const updateCrud = asynchandler(async (req ,res)=>{
 })
 
 
+//method 1
+// const getCrud = asynchandler(async (req ,res)=>{
+//     const {limit,page} = req.query
+    
+//     const options = {
+//         limit:limit,
+//         page:page
+//     }
+
+//     await Crud.paginate({createdBy:req.user?._id},options,function(err,result){
+//      return res
+//      .status(200)
+//      .json(
+//         new ApiResponse(
+//             200,
+//             result,
+//             "Pages loaded successfully"
+//         )
+//      )
+
+//     })
+// })
+ 
+
+//method 2
+const getCrud = asynchandler(async (req ,res)=>{
+    const {limit,page} = req.query
+    
+    const options = {
+        limit:limit,
+        page:page
+    }
+
+    const result = await Crud.paginate(
+        {createdBy:req.user?._id},
+        options
+    ) 
+    
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            result,
+            "Data fetched  successfully"
+        )
+    )
+})
+
+
 
 // const createCrud = asynchandler(async (req ,res)=>{})
 
@@ -89,5 +132,6 @@ const updateCrud = asynchandler(async (req ,res)=>{
 
 export {
     createCrud,
-    updateCrud
+    updateCrud,
+    getCrud
 }    
